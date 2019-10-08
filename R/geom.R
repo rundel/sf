@@ -35,6 +35,17 @@ st_is_simple = function(x) CPL_geos_is_simple(st_geometry(x))
 #' st_is_empty(st_sfc(ls, st_point(), st_linestring()))
 st_is_empty = function(x) CPL_geos_is_empty(st_geometry(x))
 
+#' @name geos_query
+#' @export
+#' @return st_is_ccw returns for each geometry whether it is/has a ccw ring
+#' @examples
+#' ccw  = st_polygon(list(rbind(c(0,0), c(1,0), c(0,1), c(0,0))))
+#' cw = st_polygon(list(rbind(c(0,0), c(0,1), c(1,0), c(0,0))))
+#' st_is_ccw(st_sfc(ccw, cw))
+st_is_ccw = function(x) CPL_geos_is_ccw(st_geometry(x))
+
+
+
 #' @name geos_measures
 #' @export
 #' @return If the coordinate reference system of \code{x} was set, these functions return values with unit of measurement; see \link[units]{set_units}.
@@ -176,8 +187,8 @@ st_geos_binop = function(op, x, y, par = 0.0, pattern = NA_character_,
 #' st_distance(p, p)
 #' st_distance(p, p, by_element = TRUE)
 #' @export
-st_distance = function(x, y, ..., dist_fun, by_element = FALSE, 
-		which = ifelse(isTRUE(st_is_longlat(x)), "Great Circle", "Euclidean"), 
+st_distance = function(x, y, ..., dist_fun, by_element = FALSE,
+		which = ifelse(isTRUE(st_is_longlat(x)), "Great Circle", "Euclidean"),
 		par = 0.0, tolerance = 0.0) {
 	if (missing(y))
 		y = x

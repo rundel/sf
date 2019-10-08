@@ -169,6 +169,10 @@ CPL_geos_is_empty <- function(sfc) {
     .Call('_sf_CPL_geos_is_empty', PACKAGE = 'sf', sfc)
 }
 
+CPL_geos_is_ccw <- function(sfc) {
+    .Call('_sf_CPL_geos_is_ccw', PACKAGE = 'sf', sfc)
+}
+
 CPL_geos_normalize <- function(sfc) {
     .Call('_sf_CPL_geos_normalize', PACKAGE = 'sf', sfc)
 }

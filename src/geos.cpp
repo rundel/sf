@@ -548,6 +548,46 @@ Rcpp::LogicalVector CPL_geos_is_empty(Rcpp::List sfc) {
 }
 
 // [[Rcpp::export]]
+Rcpp::LogicalVector CPL_geos_is_ccw(Rcpp::List sfc) {
+	GEOSContextHandle_t hGEOSCtxt = CPL_geos_init();
+	Rcpp::LogicalVector out(sfc.length());
+
+	std::vector<GeomPtr> geoms = geometries_from_sfc(hGEOSCtxt, sfc, NULL);
+
+	for (size_t i = 0; i < geoms.size(); i++) {
+		const GEOSGeometry* g = geoms[i].get();
+
+		int type = GEOSGeomTypeId_r(hGEOSCtxt, g);
+		switch(type) {
+			case GEOS_POLYGON : {
+				g = GEOSGetExteriorRing_r(hGEOSCtxt, g);
+			}
+			case GEOS_LINEARRING : {
+				char is_ccw;
+				int status = GEOSCoordSeq_isCCW_r(hGEOSCtxt, GEOSGeom_getCoordSeq_r(hGEOSCtxt, g), &is_ccw);
+				if (status == 0)
+					Rcpp::stop("GEOS exception");
+				out[i] = is_ccw;
+				break;
+			}
+			case GEOS_LINESTRING :
+			case GEOS_POINT :
+			case GEOS_MULTIPOINT :
+			case GEOS_MULTILINESTRING :
+			case GEOS_MULTIPOLYGON :
+			case GEOS_GEOMETRYCOLLECTION :
+			default : {
+				out[i] = NA_LOGICAL;
+			}
+		}
+	}
+
+	CPL_geos_finish(hGEOSCtxt);
+	return out;
+}
+
+
+// [[Rcpp::export]]
 Rcpp::List CPL_geos_normalize(Rcpp::List sfc) { // #nocov start
 	int dim = 2;
 	GEOSContextHandle_t hGEOSCtxt = CPL_geos_init();
